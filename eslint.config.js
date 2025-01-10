@@ -4,7 +4,10 @@ import daStyle from 'eslint-config-dicodingacademy';
 
 /** @type {import('eslint').Linter.Config[]} */
 export default [
-  { languageOptions: { globals: globals.browser } },
   pluginJs.configs.recommended,
   daStyle,
+  {
+    languageOptions: { globals: { ...globals.browser, ...globals.node } },
+    rules: { 'linebreak-style': 'off' },
+  },
 ];
