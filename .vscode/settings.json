@@ -2,5 +2,6 @@
     "editor.defaultFormatter": "esbenp.prettier-vscode",
     "prettier.endOfLine": "lf",
     "files.eol": "\n",
-    "editor.tabSize": 2
+    "editor.tabSize": 2,
+    "editor.formatOnSave": true
 }
