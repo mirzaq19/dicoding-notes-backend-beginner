@@ -2,6 +2,7 @@ import Hapi from '@hapi/hapi';
 import NotePlugin from './api/notes/index.js';
 import NotesService from './services/inMemory/NoteService.js';
 import { NotesValidator } from './validator/notes/index.js';
+import ClientError from './exceptions/ClientError.js';
 
 const init = async () => {
   const notesService = new NotesService();
@@ -22,6 +23,23 @@ const init = async () => {
       service: notesService,
       validator: NotesValidator,
     },
+  });
+
+  server.ext('onPreResponse', (request, h) => {
+    // mendapatkan konteks response dari request
+    const { response } = request;
+
+    // penanganan client error secara internal.
+    if (response instanceof ClientError) {
+      const newResponse = h.response({
+        status: 'fail',
+        message: response.message,
+      });
+      newResponse.code(response.statusCode);
+      return newResponse;
+    }
+
+    return h.continue;
   });
 
   await server.start();
