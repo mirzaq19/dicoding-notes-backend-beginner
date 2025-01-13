@@ -1,3 +1,4 @@
+import 'dotenv/config';
 import Hapi from '@hapi/hapi';
 import NotePlugin from './api/notes/index.js';
 import NotesService from './services/inMemory/NoteService.js';
@@ -8,8 +9,8 @@ const init = async () => {
   const notesService = new NotesService();
 
   const server = Hapi.server({
-    port: 5000,
-    host: process.env.NODE_ENV === 'production' ? '0.0.0.0' : 'localhost',
+    port: process.env.PORT || 5000,
+    host: process.env.HOST || 'localhost',
     routes: {
       cors: {
         origin: ['http://notesapp-v1.dicodingacademy.com'],
