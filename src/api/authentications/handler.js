@@ -12,12 +12,8 @@ export default class AuthenticationsHandler {
   }
 
   async postAuthenticationHandler(request, h) {
-    console.log({ payload: request.payload });
-
     this._validator.validatePostAuthenticationPayload(request.payload);
     const { username, password } = request.payload;
-
-    console.log({ service: this._usersService });
 
     const id = await this._usersService.verifyUserCredential(
       username,
@@ -26,9 +22,6 @@ export default class AuthenticationsHandler {
 
     const accessToken = this._tokenManager.generateAccessToken({ id });
     const refreshToken = this._tokenManager.generateRefreshToken({ id });
-
-    console.log({ accessToken, refreshToken });
-
     await this._authenticationsService.addRefreshToken(refreshToken);
 
     const response = h.response({
