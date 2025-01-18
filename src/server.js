@@ -23,7 +23,10 @@ const init = async () => {
     host: process.env.HOST || 'localhost',
     routes: {
       cors: {
-        origin: ['http://notesapp-v1.dicodingacademy.com'],
+        origin: [
+          'http://notesapp-v1.dicodingacademy.com',
+          'http://notesapp-v2.dicodingacademy.com',
+        ],
       },
     },
   });
