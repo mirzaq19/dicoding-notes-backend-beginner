@@ -1,16 +1,22 @@
 import 'dotenv/config';
 import Hapi from '@hapi/hapi';
+import Jwt from '@hapi/jwt';
 import NotePlugin from './api/notes/index.js';
 import NotesService from './services/postgres/NoteService.js';
 import { NotesValidator } from './validator/notes/index.js';
 import UserPlugin from './api/users/index.js';
 import UserService from './services/postgres/UserService.js';
 import { UsersValidator } from './validator/users/index.js';
+import AuthenticationPlugin from './api/authentications/index.js';
+import AuthenticationService from './services/postgres/AuthenticationService.js';
+import { AuthenticationsValidator } from './validator/authentications/index.js';
+import TokenManager from './tokenize/TokenManager.js';
 import ClientError from './exceptions/ClientError.js';
 
 const init = async () => {
   const notesService = new NotesService();
-  const userService = new UserService();
+  const usersService = new UserService();
+  const authenticationsService = new AuthenticationService();
 
   const server = Hapi.server({
     port: process.env.PORT || 5000,
@@ -20,6 +26,26 @@ const init = async () => {
         origin: ['http://notesapp-v1.dicodingacademy.com'],
       },
     },
+  });
+
+  await server.register({
+    plugin: Jwt,
+  });
+
+  server.auth.strategy('notesapp_jwt', 'jwt', {
+    keys: process.env.ACCESS_TOKEN_KEY,
+    verify: {
+      aud: false,
+      iss: false,
+      sub: false,
+      maxAgeSec: process.env.ACCESS_TOKEN_AGE,
+    },
+    validate: (artifacts) => ({
+      isValid: true,
+      credentials: {
+        id: artifacts.decoded.payload.id,
+      },
+    }),
   });
 
   await server.register([
@@ -33,8 +59,17 @@ const init = async () => {
     {
       plugin: UserPlugin,
       options: {
-        service: userService,
+        service: usersService,
         validator: UsersValidator,
+      },
+    },
+    {
+      plugin: AuthenticationPlugin,
+      options: {
+        authenticationsService,
+        usersService,
+        tokenManager: TokenManager,
+        validator: AuthenticationsValidator,
       },
     },
   ]);
