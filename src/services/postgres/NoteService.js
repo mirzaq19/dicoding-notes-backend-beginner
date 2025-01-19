@@ -92,7 +92,6 @@ export default class NoteService {
     }
     const note = result.rows[0];
     if (note.owner !== owner) {
-      console.log(note.owner, owner);
       throw new AuthorizationError('Anda tidak berhak mengakses resource ini');
     }
   }
