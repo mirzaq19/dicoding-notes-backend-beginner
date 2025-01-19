@@ -2,21 +2,21 @@ import 'dotenv/config';
 import Hapi from '@hapi/hapi';
 import Jwt from '@hapi/jwt';
 import NotePlugin from './api/notes/index.js';
-import NotesService from './services/postgres/NoteService.js';
+import NotesService from './services/postgres/NotesService.js';
 import { NotesValidator } from './validator/notes/index.js';
 import UserPlugin from './api/users/index.js';
-import UserService from './services/postgres/UserService.js';
+import UsersService from './services/postgres/UsersService.js';
 import { UsersValidator } from './validator/users/index.js';
 import AuthenticationPlugin from './api/authentications/index.js';
-import AuthenticationService from './services/postgres/AuthenticationService.js';
+import AuthenticationsService from './services/postgres/AuthenticationsService.js';
 import { AuthenticationsValidator } from './validator/authentications/index.js';
 import TokenManager from './tokenize/TokenManager.js';
 import ClientError from './exceptions/ClientError.js';
 
 const init = async () => {
   const notesService = new NotesService();
-  const usersService = new UserService();
-  const authenticationsService = new AuthenticationService();
+  const usersService = new UsersService();
+  const authenticationsService = new AuthenticationsService();
 
   const server = Hapi.server({
     port: process.env.PORT || 5000,
