@@ -4,6 +4,7 @@ export default class UsersHandler {
     this._validator = validator;
 
     this.postUserHandler = this.postUserHandler.bind(this);
+    this.getUsersHandler = this.getUsersHandler.bind(this);
     this.getUserByIdHandler = this.getUserByIdHandler.bind(this);
   }
 
@@ -25,6 +26,17 @@ export default class UsersHandler {
       })
       .code(201);
     return response;
+  }
+
+  async getUsersHandler(request, h) {
+    const { username = '' } = request.query;
+    const users = await this._service.getUsers({ username });
+    return h.response({
+      status: 'success',
+      data: {
+        users,
+      },
+    });
   }
 
   async getUserByIdHandler(request, h) {

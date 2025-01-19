@@ -1,20 +1,34 @@
 import 'dotenv/config';
 import Hapi from '@hapi/hapi';
 import Jwt from '@hapi/jwt';
+
+// notes
 import NotePlugin from './api/notes/index.js';
 import NotesService from './services/postgres/NotesService.js';
 import { NotesValidator } from './validator/notes/index.js';
+
+// users
 import UserPlugin from './api/users/index.js';
 import UsersService from './services/postgres/UsersService.js';
 import { UsersValidator } from './validator/users/index.js';
+
+// authentications
 import AuthenticationPlugin from './api/authentications/index.js';
 import AuthenticationsService from './services/postgres/AuthenticationsService.js';
 import { AuthenticationsValidator } from './validator/authentications/index.js';
+
+// collaborations
+import CollaborationPlugin from './api/collaborations/index.js';
+import CollaborationsService from './services/postgres/CollaborationsService.js';
+import { CollaborationsValidator } from './validator/collaborations/index.js';
+
+// token
 import TokenManager from './tokenize/TokenManager.js';
 import ClientError from './exceptions/ClientError.js';
 
 const init = async () => {
-  const notesService = new NotesService();
+  const collaborationsService = new CollaborationsService();
+  const notesService = new NotesService(collaborationsService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
 
@@ -73,6 +87,14 @@ const init = async () => {
         usersService,
         tokenManager: TokenManager,
         validator: AuthenticationsValidator,
+      },
+    },
+    {
+      plugin: CollaborationPlugin,
+      options: {
+        collaborationsService,
+        notesService,
+        validator: CollaborationsValidator,
       },
     },
   ]);

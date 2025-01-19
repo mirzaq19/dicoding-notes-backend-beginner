@@ -4,6 +4,7 @@ export const mapDBToModel = ({
   title,
   body,
   tags,
+  username,
   create_at,
   update_at,
 }) => ({
@@ -11,6 +12,7 @@ export const mapDBToModel = ({
   title,
   body,
   tags,
+  username,
   createdAt: create_at,
   updatedAt: update_at,
 });
