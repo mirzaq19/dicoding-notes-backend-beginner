@@ -22,6 +22,11 @@ import CollaborationPlugin from './api/collaborations/index.js';
 import CollaborationsService from './services/postgres/CollaborationsService.js';
 import { CollaborationsValidator } from './validator/collaborations/index.js';
 
+// exports
+import ExportPlugin from './api/exports/index.js';
+import ProducerService from './services/rabbitmq/ProducerService.js';
+import { ExportsValidator } from './validator/exports/index.js';
+
 // token
 import TokenManager from './tokenize/TokenManager.js';
 import ClientError from './exceptions/ClientError.js';
@@ -95,6 +100,13 @@ const init = async () => {
         collaborationsService,
         notesService,
         validator: CollaborationsValidator,
+      },
+    },
+    {
+      plugin: ExportPlugin,
+      options: {
+        service: ProducerService,
+        validator: ExportsValidator,
       },
     },
   ]);
