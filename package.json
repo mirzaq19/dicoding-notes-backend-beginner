@@ -24,6 +24,7 @@
   },
   "dependencies": {
     "@hapi/hapi": "^21.3.12",
+    "@hapi/inert": "^7.1.0",
     "@hapi/jwt": "^3.2.0",
     "@types/amqplib": "^0.10.6",
     "amqplib": "^0.10.5",

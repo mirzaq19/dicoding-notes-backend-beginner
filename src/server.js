@@ -1,6 +1,8 @@
 import 'dotenv/config';
+import path from 'path';
 import Hapi from '@hapi/hapi';
 import Jwt from '@hapi/jwt';
+import Inert from '@hapi/inert';
 
 // notes
 import NotePlugin from './api/notes/index.js';
@@ -27,6 +29,11 @@ import ExportPlugin from './api/exports/index.js';
 import ProducerService from './services/rabbitmq/ProducerService.js';
 import { ExportsValidator } from './validator/exports/index.js';
 
+// uploads
+import UploadPlugin from './api/uploads/index.js';
+import StorageService from './services/storage/StorageService.js';
+import { UploadsValidator } from './validator/uploads/index.js';
+
 // token
 import TokenManager from './tokenize/TokenManager.js';
 import ClientError from './exceptions/ClientError.js';
@@ -36,6 +43,9 @@ const init = async () => {
   const notesService = new NotesService(collaborationsService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
+  const storageService = new StorageService(
+    path.resolve(import.meta.dirname, 'api/uploads/file/images')
+  );
 
   const server = Hapi.server({
     port: process.env.PORT || 5000,
@@ -45,14 +55,20 @@ const init = async () => {
         origin: [
           'http://notesapp-v1.dicodingacademy.com',
           'http://notesapp-v2.dicodingacademy.com',
+          'http://notesapp-v3.dicodingacademy.com',
         ],
       },
     },
   });
 
-  await server.register({
-    plugin: Jwt,
-  });
+  await server.register([
+    {
+      plugin: Jwt,
+    },
+    {
+      plugin: Inert,
+    },
+  ]);
 
   server.auth.strategy('notesapp_jwt', 'jwt', {
     keys: process.env.ACCESS_TOKEN_KEY,
@@ -107,6 +123,13 @@ const init = async () => {
       options: {
         service: ProducerService,
         validator: ExportsValidator,
+      },
+    },
+    {
+      plugin: UploadPlugin,
+      options: {
+        service: storageService,
+        validator: UploadsValidator,
       },
     },
   ]);
