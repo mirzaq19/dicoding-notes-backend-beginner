@@ -34,13 +34,17 @@ import UploadPlugin from './api/uploads/index.js';
 import StorageService from './services/storage/StorageService.js';
 import { UploadsValidator } from './validator/uploads/index.js';
 
+// cache
+import CacheService from './services/redis/CacheService.js';
+
 // token
 import TokenManager from './tokenize/TokenManager.js';
 import ClientError from './exceptions/ClientError.js';
 
 const init = async () => {
-  const collaborationsService = new CollaborationsService();
-  const notesService = new NotesService(collaborationsService);
+  const cacheService = new CacheService();
+  const collaborationsService = new CollaborationsService(cacheService);
+  const notesService = new NotesService(collaborationsService, cacheService);
   const usersService = new UsersService();
   const authenticationsService = new AuthenticationsService();
   const storageService = new StorageService(
